@@ -1,18 +1,30 @@
 {
-  "name": "toko-app",
+  "name": "my-fullstack-app",
   "private": true,
+  "workspaces": [
+    "grocery-api",
+    "grocery-fe"
+  ],
   "scripts": {
-    "dev": "concurrently \"npm --dir grocery-api start:dev\" \"npm --dir grocery-fe dev\"",
-    "dev:grocery-api": "npm --dir grocery-api start:dev",
-    "dev:grocery-fe": "npm --dir grocery-fe dev",
-    "build": "npm build:grocery-api && npm build:grocery-fe",
-    "build:grocery-api": "npm --dir grocery-api build",
-    "build:grocery-fe": "npm --dir grocery-fe build",
-    "lint": "npm lint:grocery-api && npm lint:grocery-fe",
-    "lint:grocery-api": "npm --dir grocery-api lint",
-    "lint:grocery-fe": "npm --dir grocery-fe lint"
+    "dev": "concurrently \"npm run start:dev --workspace=grocery-api\" \"npm run dev --workspace=grocery-fe\"",
+    "dev:grocery-api": "npm run start:dev --workspace=grocery-api",
+    "dev:grocery-fe": "npm run dev --workspace=grocery-fe -- --port 3001",
+
+    "build": "npm run build:grocery-api && npm run build:grocery-fe",
+    "build:grocery-api": "npm run build --workspace=grocery-api",
+    "build:grocery-fe": "npm run build --workspace=grocery-fe",
+
+    "db:generate": "npm exec --workspace=grocery-api prisma generate",
+    "db:migrate": "npm exec --workspace=grocery-api prisma migrate dev",
+    "db:migrate:deploy": "npm exec --workspace=grocery-api prisma migrate deploy",
+
+    "setup:grocery-api": "npm run setup -workspace=grocery-api"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0"
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=10"
   }
 }

@@ -1,63 +1,67 @@
 # NestJS + Nuxt Application
 
-Full-stack web application using:
+Fullstack web aplikasi menggunakan:
 
-* **Backend:** NestJS
+* **Backend:** NestJS 12
 * **Frontend:** Nuxt 3
 * **Database:** PostgreSQL
-* **ORM:** Prisma
-* **Package Manager:** pnpm
+* **ORM:** Prisma 7
+* **Runtime:** Node.js 24
+* **Package Manager:** npm
 * **Container:** Docker / Docker Compose
 
 The backend and frontend are maintained in a single Git repository.
 
----
-
-## Project Structure
-
-```text
-.
-├── backend/
-│   ├── src/
-│   ├── prisma/
-│   ├── test/
-│   ├── .env.example
-│   ├── package.json
-│   └── ...
-│
-├── frontend/
-│   ├── assets/
-│   ├── components/
-│   ├── pages/
-│   ├── public/
-│   ├── .env.example
-│   ├── package.json
-│   └── ...
-│
-├── docker-compose.yml
-├── .gitignore
-└── README.md
-```
-
----
-
 # Requirements
 
-Make sure the following tools are installed:
+pastikan tools yang sudah terinstall:
 
-* Node.js
-* pnpm
+* Node.js 24
+* npm
 * Docker
 * Docker Compose
 * Git
 
-Check your installation:
+Check versi:
 
 ```bash
 node --version
-pnpm --version
+npm --version
 docker --version
 docker compose version
+```
+
+Expected Node.js version:
+
+```text
+v24.x.x
+```
+
+---
+
+# Node.js Version
+
+Harap menggunakan **Node.js 24**.
+Lebih direkomendasikan menggunaka node package manager seperti `nvm`.
+
+Check node version:
+
+```bash
+node -v
+```
+
+jika menggunakan NVM:
+
+```bash
+nvm install 24
+nvm use 24
+```
+
+verif:
+
+```bash
+node -v
+npm -v
 ```
 
 ---
@@ -73,157 +77,131 @@ cd <project-directory>
 
 # 2. Install Dependencies
 
-Install backend dependencies:
+Backend dan frontend menggunaka NPM workspace untuk memudahkan setup project.
+
+Install frontend dan backend dependencies:
 
 ```bash
-cd backend
-pnpm install
-```
-
-Install frontend dependencies:
-
-```bash
-cd ../frontend
-pnpm install
-```
-
-Or from the project root:
-
-```bash
-cd backend && pnpm install
-cd ../frontend && pnpm install
+npm install
 ```
 
 ---
 
 # 3. Environment Variables
 
-Both applications use environment variables.
+Silakan sesuaikan environment pada masing-masing project grocery-api dan grocery-fe.
 
 ## Backend
 
-Copy:
+Copy dan paste environment file pada grocery-api:
 
 ```bash
-cd backend
+cd grocery-api
 cp .env.example .env
 ```
-
-Example:
-
-```env
-NODE_ENV=development
-
-PORT=3000
-
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/myapp?schema=public"
-
-JWT_SECRET="change-this-secret"
-```
-
-Adjust the values according to your local environment.
 
 ---
 
 ## Frontend
 
-Copy:
+Copy dan paste environment pada grocery-fe:
 
 ```bash
-cd frontend
+cd ../grocery-fe
 cp .env.example .env
 ```
-
-Example:
-
-```env
-NUXT_PUBLIC_API_BASE_URL=http://localhost:3000/api
-```
-
-The frontend will use this URL to communicate with the NestJS API.
 
 ---
 
 # 4. Start PostgreSQL
 
-If PostgreSQL is managed using Docker Compose:
+Untuk database PostgresSQL saya menggunakan docker compose.
+
+dari folder root:
 
 ```bash
-docker compose up -d postgres
+docker compose up -d
 ```
 
-Check running containers:
+check container:
 
 ```bash
 docker compose ps
 ```
 
-Example `docker-compose.yml`:
+pastikan database benar2 kosong:
 
-```yaml
-services:
-  postgres:
-    image: postgres:16
-    container_name: myapp-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: myapp
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+```bash
+grocery_db       → kosong
+grocery_test_db  → kosong
 ```
 
 ---
 
-# 5. Setup Database
+# 5. Setup Prisma 7
 
-Go to the backend:
+Karena menggunakan NPM workspace saya sudah menyediakan npm setup untuk mempermudah migrasi, genare client, dan seed data:
 
-```bash
-cd backend
-```
-
-Generate Prisma Client:
+pada folder root jalankan:
 
 ```bash
-pnpm prisma generate
-```
-
-Run database migrations:
-
-```bash
-pnpm prisma migrate dev
-```
-
-If this is a completely new database and you already have migration files:
-
-```bash
-pnpm prisma migrate deploy
-```
-
-For local development, use:
-
-```bash
-pnpm prisma migrate dev
+npm run setup:grocery-api
 ```
 
 ---
 
-# 6. Seed Database
+# 6. Prisma Migration Workflow
 
-If the project contains Prisma seed data:
+Saat ada perubahan table:
 
-```bash
-pnpm prisma db seed
+```text
+backend/prisma/schema.prisma
 ```
 
-For example, the seed can create:
+buat migrasi:
+
+```bash
+npx prisma migrate dev --name add_something
+```
+
+Kemudian commit ke Git.
+
+```bash
+git add prisma
+git commit -m "feat: say something for migration"
+```
+
+developer lain:
+
+```bash
+git pull
+npm run db:migrate:deploy
+npm run db:generate
+```
+
+### Production
+
+Jangan gunakan:
+
+```bash
+npx prisma migrate dev
+```
+
+di production.
+
+Use:
+
+```bash
+npx prisma migrate deploy
+```
+
+---
+
+# 7. Prisma Seed
+
+Untuk seend sendiri terdiri dari:
+
+The seed can be used to create initial data such as:
 
 * Admin user
 * Staff user
@@ -231,148 +209,89 @@ For example, the seed can create:
 * Products
 * Product variants
 
+```bash
+admin user : admin@grocery.local | Password123!
+staff user : staff@grocery.local | Password123!
+```
+
 ---
 
-# 7. Run Backend
+# 8. Run Project
 
-From:
+Karena menggunakan NPM workspace kita tinggal menjalankan perintah ini di root folder:
+
+```bash
+npm run dev
+```
+
+maka backend dan frontend akan otomatis running
+Backend:
 
 ```text
-backend/
+http://localhost:3001
 ```
 
-Run:
-
-```bash
-pnpm dev
-```
-
-or:
-
-```bash
-pnpm start:dev
-```
-
-Backend should be available at:
+Frontend:
 
 ```text
 http://localhost:3000
 ```
 
-API example:
-
-```text
-http://localhost:3000/api/products
-```
-
----
-
-# 8. Run Frontend
-
-Open another terminal:
-
-```bash
-cd frontend
-```
-
-Run:
-
-```bash
-pnpm dev
-```
-
-Nuxt should be available at:
-
-```text
-http://localhost:3001
-```
-
-The frontend communicates with:
-
-```text
-http://localhost:3000/api
-```
-
----
-
 # 9. Run Full Stack Locally
 
-You need three services:
+Local architecture:
 
 ```text
-┌──────────────────────┐
-│      Nuxt 3          │
-│    localhost:3001    │
-└──────────┬───────────┘
-           │
-           │ HTTP
-           ▼
-┌──────────────────────┐
-│      NestJS          │
-│    localhost:3000    │
-└──────────┬───────────┘
-           │
-           │ Prisma
-           ▼
-┌──────────────────────┐
-│     PostgreSQL       │
-│    localhost:5432    │
-└──────────────────────┘
-```
-
-Terminal 1:
-
-```bash
-docker compose up -d postgres
-```
-
-Terminal 2:
-
-```bash
-cd backend
-pnpm start:dev
-```
-
-Terminal 3:
-
-```bash
-cd frontend
-pnpm dev
-```
-
-Open:
-
-```text
-http://localhost:3001
+                    Browser
+                       │
+                       ▼
+              ┌─────────────────┐
+              │     Nuxt 3      │
+              │    :3001        │
+              └────────┬────────┘
+                       │
+                       │ HTTP
+                       ▼
+              ┌─────────────────┐
+              │    NestJS 12    │
+              │     :3000       │
+              └────────┬────────┘
+                       │
+                       │ Prisma 7
+                       ▼
+              ┌─────────────────┐
+              │   PostgreSQL    │
+              │     :5432       │
+              └─────────────────┘
 ```
 
 ---
 
 # Production
 
-The recommended production architecture is:
+Recommended production architecture:
 
 ```text
-                    Internet
-                       │
-                       ▼
-              ┌─────────────────┐
-              │ Reverse Proxy    │
-              │ Nginx / Traefik  │
-              └────────┬────────┘
-                       │
-             ┌─────────┴─────────┐
-             │                   │
-             ▼                   ▼
-      ┌──────────────┐    ┌──────────────┐
-      │    Nuxt      │    │    NestJS    │
-      │    :3001     │    │    :3000     │
-      └──────────────┘    └──────┬───────┘
-                                  │
-                                  ▼
-                           ┌──────────────┐
-                           │ PostgreSQL   │
-                           └──────────────┘
+                         Internet
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │ Reverse Proxy │
+                    │ Nginx / Proxy │
+                    └───────┬───────┘
+                            │
+                 ┌──────────┴──────────┐
+                 │                     │
+                 ▼                     ▼
+          ┌──────────────┐      ┌──────────────┐
+          │    Nuxt 3    │      │   NestJS 12  │
+          │    :3001     │      │    :3000     │
+          └──────────────┘      └───────┬───────┘
+                                        │
+                                        ▼
+                                 ┌──────────────┐
+                                 │  PostgreSQL  │
+                                 └──────────────┘
 ```
 
 ---
@@ -417,59 +336,62 @@ Example:
 NUXT_PUBLIC_API_BASE_URL=https://api.example.com/api
 ```
 
+Only variables intended to be exposed to the browser should use `NUXT_PUBLIC_*`.
+
+Never expose:
+
+```text
+DATABASE_URL
+JWT_SECRET
+```
+
+through Nuxt public environment variables.
+
 ---
 
-# Production Backend Setup
+# Production Backend Deployment
 
-Go to backend:
+Go to the backend:
 
 ```bash
 cd backend
 ```
 
-Install production dependencies:
+Install dependencies:
 
 ```bash
-pnpm install --prod
+npm ci
 ```
 
 Generate Prisma Client:
 
 ```bash
-pnpm prisma generate
+npx prisma generate
 ```
 
-Run production migrations:
+Apply production migrations:
 
 ```bash
-pnpm prisma migrate deploy
+npx prisma migrate deploy
 ```
 
 Build NestJS:
 
 ```bash
-pnpm build
+npm run build
 ```
 
-Start the application:
+Start:
 
 ```bash
-pnpm start:prod
+npm run start:prod
 ```
-
-The NestJS application will run on:
-
-```text
-http://localhost:3000
-```
-
-or the configured production host/port.
 
 ---
 
-# Production Frontend Setup
+# Production Frontend Deployment
 
-Go to frontend:
+Go to the frontend:
 
 ```bash
 cd frontend
@@ -478,40 +400,32 @@ cd frontend
 Install dependencies:
 
 ```bash
-pnpm install
+npm ci
 ```
 
 Build Nuxt:
 
 ```bash
-pnpm build
+npm run build
 ```
 
-Start Nuxt:
-
-```bash
-pnpm preview
-```
-
-or:
+Start the production server:
 
 ```bash
 node .output/server/index.mjs
 ```
 
-For production, use:
+Nuxt's production output is generated inside:
 
-```bash
-node .output/server/index.mjs
+```text
+frontend/.output/
 ```
-
-Nuxt will serve the generated application from `.output`.
 
 ---
 
-# Production Deployment Order
+# Production Deployment Flow
 
-A typical deployment should follow this order:
+When deploying a new version:
 
 ## 1. Pull latest code
 
@@ -519,222 +433,102 @@ A typical deployment should follow this order:
 git pull origin main
 ```
 
-## 2. Install dependencies
-
-Backend:
+## 2. Install backend dependencies
 
 ```bash
 cd backend
-pnpm install --frozen-lockfile
+npm ci
 ```
 
-Frontend:
+## 3. Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+## 4. Run database migrations
+
+```bash
+npx prisma migrate deploy
+```
+
+## 5. Build backend
+
+```bash
+npm run build
+```
+
+## 6. Install frontend dependencies
 
 ```bash
 cd ../frontend
-pnpm install --frozen-lockfile
+npm ci
 ```
 
-## 3. Update database
+## 7. Build frontend
+
+```bash
+npm run build
+```
+
+## 8. Restart applications
+
+Start NestJS:
 
 ```bash
 cd ../backend
-pnpm prisma generate
-pnpm prisma migrate deploy
+npm run start:prod
 ```
 
-## 4. Build backend
-
-```bash
-pnpm build
-```
-
-## 5. Build frontend
-
-```bash
-cd ../frontend
-pnpm build
-```
-
-## 6. Restart applications
-
-Backend:
-
-```bash
-cd ../backend
-pnpm start:prod
-```
-
-Frontend:
+Start Nuxt:
 
 ```bash
 cd ../frontend
 node .output/server/index.mjs
 ```
 
+For production, it is recommended to use a process manager such as PM2 or Docker rather than running these commands directly in a terminal.
+
 ---
 
-# Database Migration Workflow
+# Database Migration Rules
 
-When changing the Prisma schema during development:
+### Development
 
-```bash
-cd backend
-```
-
-Edit:
+After modifying:
 
 ```text
-prisma/schema.prisma
+backend/prisma/schema.prisma
 ```
 
-Then create a migration:
+run:
 
 ```bash
-pnpm prisma migrate dev --name add_product_status
+npx prisma migrate dev --name <migration-name>
 ```
 
-Example:
-
-```text
-prisma/
-├── migrations/
-│   ├── 20260917090000_init/
-│   ├── 20260917100000_add_category/
-│   └── 20260917110000_add_product_status/
-└── schema.prisma
-```
-
-Commit migration files to Git.
+Commit the generated migration:
 
 ```bash
-git add prisma/
-git commit -m "feat: add product status migration"
+git add prisma/migrations
+git commit -m "feat: add database migration"
 ```
 
-In production, **do not use**:
+### Production
+
+Deploy the existing migration:
 
 ```bash
-pnpm prisma migrate dev
+npx prisma migrate deploy
 ```
 
-Use:
+Do not run:
 
 ```bash
-pnpm prisma migrate deploy
+npx prisma migrate dev
 ```
 
----
-
-# Prisma Commands
-
-Generate Prisma Client:
-
-```bash
-pnpm prisma generate
-```
-
-Create migration:
-
-```bash
-pnpm prisma migrate dev --name <migration-name>
-```
-
-Apply production migrations:
-
-```bash
-pnpm prisma migrate deploy
-```
-
-Reset local database:
-
-```bash
-pnpm prisma migrate reset
-```
-
-Open Prisma Studio:
-
-```bash
-pnpm prisma studio
-```
-
-Run seed:
-
-```bash
-pnpm prisma db seed
-```
-
----
-
-# Useful Development Commands
-
-## Backend
-
-```bash
-cd backend
-```
-
-Development:
-
-```bash
-pnpm start:dev
-```
-
-Build:
-
-```bash
-pnpm build
-```
-
-Production:
-
-```bash
-pnpm start:prod
-```
-
-Lint:
-
-```bash
-pnpm lint
-```
-
-Test:
-
-```bash
-pnpm test
-```
-
----
-
-## Frontend
-
-```bash
-cd frontend
-```
-
-Development:
-
-```bash
-pnpm dev
-```
-
-Build:
-
-```bash
-pnpm build
-```
-
-Preview:
-
-```bash
-pnpm preview
-```
-
-Lint:
-
-```bash
-pnpm lint
-```
+on production.
 
 ---
 
@@ -750,7 +544,7 @@ main
 └── hotfix/*
 ```
 
-Example:
+Create a feature branch:
 
 ```bash
 git checkout -b feature/product-management
@@ -773,52 +567,56 @@ git push origin feature/product-management
 
 # Important Rules
 
-1. Never commit `.env`.
-2. Always commit `.env.example`.
-3. Always commit Prisma migration files.
-4. Use `prisma migrate dev` for local development.
-5. Use `prisma migrate deploy` in production.
-6. Do not manually modify production database schema.
-7. Keep frontend and backend dependencies separate.
-8. Use `pnpm install --frozen-lockfile` in CI/CD.
-9. Store production secrets in the server/CI/CD secret manager.
-10. Do not expose `DATABASE_URL` or other backend secrets to Nuxt public environment variables.
+1. Use **Node.js 24** for development and production.
+2. Use **npm** as the package manager.
+3. Never commit `.env`.
+4. Always maintain `.env.example`.
+5. Commit Prisma migration files.
+6. Use `npx prisma migrate dev` for local development.
+7. Use `npx prisma migrate deploy` for production.
+8. Do not manually modify the production database schema.
+9. Keep backend and frontend dependencies separated.
+10. Use `npm ci` for production/CI installations.
+11. Never expose backend secrets to Nuxt public environment variables.
+12. Keep only one Git repository at the project root.
+13. Do not run `git init` inside `backend` or `frontend`.
 
 ---
 
 # Quick Start
 
-For a new developer:
+Clone the repository:
 
 ```bash
 git clone <repository-url>
-
 cd <project-directory>
+```
 
-# Backend
-cd backend
-pnpm install
-cp .env.example .env
-pnpm prisma generate
-pnpm prisma migrate dev
-pnpm prisma db seed
+Start PostgreSQL:
 
-# Frontend
-cd ../frontend
-pnpm install
-cp .env.example .env
-
-# Start PostgreSQL
-cd ..
+```bash
 docker compose up -d postgres
+```
 
-# Start backend
+Setup backend:
+
+```bash
 cd backend
-pnpm start:dev
+npm install
+cp .env.example .env
+npx prisma generate
+npx prisma migrate dev
+npx prisma db seed
+npm run start:dev
+```
 
-# In another terminal
+Open another terminal and setup frontend:
+
+```bash
 cd frontend
-pnpm dev
+npm install
+cp .env.example .env
+npm run dev -- --port 3001
 ```
 
 Open:
@@ -827,8 +625,24 @@ Open:
 http://localhost:3001
 ```
 
-Backend:
+Backend API:
 
 ```text
 http://localhost:3000
 ```
+
+---
+
+# Technology Stack
+
+| Layer           | Technology |
+| --------------- | ---------- |
+| Runtime         | Node.js 24 |
+| Package Manager | npm        |
+| Frontend        | Nuxt 3     |
+| Backend         | NestJS 12  |
+| Language        | TypeScript |
+| Database        | PostgreSQL |
+| ORM             | Prisma 7   |
+| Container       | Docker     |
+| Version Control | Git        |
