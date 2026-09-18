@@ -362,6 +362,8 @@ Contohnya:
 - Third-party credentials
 - Encryption keys
 jadi secret harusnya hanya bisa di akses dari sisi server atau dedicated secret management solution, bukan di level repo
+7. User Email Validation
+melakukan validation email ketika register user, hal ini akan membantu kedepannya untuk fitur fitur seperti forgot password ataupun validasi info yang sifatnya credential
 
 # Performance concern
 1. Database queries
@@ -503,6 +505,18 @@ sebelum melakukan database migration yang signifikan:
 - test migration di staging
 - pahami estimasi waktu migration
 - siapkan recovery plan
+
+# Tambahan
+
+1. API versioning
+sebenarnya ini lebih masuk ke arah untuk api yang yg berpotensi breaking changes ketika ada perubaha yg complex pada api itu sendiri, contohnya ketika kita ingin merubah schema produk atau perubahan complex lainnya. disarankan untuk menggunakan api versioning tujuannya selain mencegah breaking changes juga untuk masa transisi bagi user, sebelum schema lama dihentikan. ini perlu perhatian khusus karena ketika semua sudah berpindah ke api baru api yang lama bisa kita matikan
+2. Feature Flag
+ini sebenarnya lebih ke arah pruduct management namun tetap implementasinya pada sisi engineer, untuk feature flag sendiri memeiliki berbagai fungsi antara lain:
+- pemisahan rilis dan deployment, contoh kasus frontend bisa rilis tanpa menunggu backend deployment ke production karena dalam keadaan feature flag dalam kondisi off
+- rilis bertahap
+- rollback instant (switch turn on/off)
+- A/B testing
+- akses BETA based on user/merchant
 
 
 

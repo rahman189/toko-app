@@ -279,6 +279,18 @@ Beberapa fitur tidak saya build pada tahap ini karena belum memberikan value yan
 
 Belum sempat diimplementasikan karena kendala waktu dan focus pada core function
 
+- Email User validation
+
+untuk email user validation ketika proses regestrasi termasuk menjadi concern karena salah satunya adalah untuk fitur forgot password yang membutuhkan email user yang valid. namun hal ini bisa ditunda karena kita focus pada fungsi CRUD produk
+
+- Forgot Password
+
+ini juga belum diimplementasikan karena perlu email user validation untuk memastikan email user valid
+
+- Halaman Profile
+
+untuk concernnya adalah karena ini bukan fungsi utama dan terkendala waktu, namun kedepannya hal ini diperlukan untuk update info seperti nama dan fitur ganti password
+
 - Redis
 
 belum diperlukan selama PostgreSQL dan API query masih dapat memenuhi kebutuhan performa, redis akan ditambahkan jika profiling menunjukkan kebutuhan caching atau distributed state
