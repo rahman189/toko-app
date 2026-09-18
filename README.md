@@ -10,9 +10,7 @@ Fullstack web aplikasi menggunakan:
 * **Package Manager:** npm
 * **Container:** Docker / Docker Compose
 
-Untuk DB sendiri kenapa menggunakan postgreSQL daripada mongoDB karena ada beberapa alasan:
-1. untuk aplikasi toko sendiri karena data model aplikasi bersifat relational, memiliki banyak relasi, lebih kepada data integrity, dan schema yang sudah ada atau mudah diprediksi, dan karakter inilah yang menurut saya lebih cocok dengan postgreSQL dibandingkan dengan mongoDB
-2. sedangkan mongoDB sendiri lebih diperuntukan untuk fleksibilitas atau document oriented data model
+**untuk concern pemilihan DB dibahas pada architecture note agar tidak ada double information**
 
 
 # Requirements
@@ -45,7 +43,7 @@ v24.x.x
 # Node.js Version
 
 Harap menggunakan **Node.js 24**.
-Lebih direkomendasikan menggunaka node package manager seperti `nvm`.
+Lebih direkomendasikan menggunakan node package manager seperti `nvm`.
 
 Check node version:
 
@@ -238,7 +236,33 @@ http://localhost:3000
 
 ---
 
-# 9. Run Full Stack Locally
+# 9. Run Unit Test
+
+sementara unit test hanya terdapat di backend saya membuat 2 unit test:
+- functional test
+- e2e test
+
+cara running:
+- dari folder root masuk ke dalam folder grocery-api
+
+```bash
+cd ../grocery-api
+```
+
+- lakukan migrasi ke database test lalu running unit test
+```bash
+db:test:migrate
+npm run test
+```
+
+- running e2e test
+```bash
+npm run test:e2e
+```
+
+---
+
+# 10. Run Full Stack Locally
 
 Local architecture:
 

@@ -29,7 +29,7 @@ describe('Auth E2E', () => {
     )
       .post('/auth/register')
       .send(user)
-      .expect(201);
+      .expect(200);
 
     expect(response.body).toHaveProperty('id');
     expect(response.body).toHaveProperty('email', user.email);

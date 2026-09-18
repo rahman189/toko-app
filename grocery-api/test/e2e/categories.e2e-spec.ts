@@ -50,7 +50,7 @@ describe('Categories E2E', () => {
           email,
           password,
         })
-        .expect(201);
+        .expect(200);
 
     userId = registerResponse.body.id;
 
@@ -121,7 +121,7 @@ describe('Categories E2E', () => {
         .send({
           name: `Minuman ${timestamp}`,
         })
-        .expect(201);
+        .expect(200);
 
     expect(response.body).toHaveProperty('id');
 

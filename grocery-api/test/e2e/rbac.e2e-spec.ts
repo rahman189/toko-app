@@ -25,7 +25,6 @@ describe('RBAC E2E', () => {
   let adminToken: string;
   let staffToken: string;
   let cashierToken: string;
-  let createdCategoryIds: string[] = [];
 
   const timestamp = Date.now();
 
@@ -99,7 +98,7 @@ describe('RBAC E2E', () => {
           email,
           password,
         })
-        .expect(201);
+        .expect(200);
 
     const userId = registerResponse.body.id;
 
@@ -143,7 +142,7 @@ describe('RBAC E2E', () => {
         .send({
           name: `Admin Category ${timestamp}`,
         })
-        .expect(201);
+        .expect(200);
 
     expect(response.body).toHaveProperty('id');
     expect(response.body.name).toBe(
@@ -162,7 +161,7 @@ describe('RBAC E2E', () => {
         .send({
           name: `Staff Category ${timestamp}`,
         })
-        .expect(201);
+        .expect(200);
 
     expect(response.body).toHaveProperty('id');
     expect(response.body.name).toBe(

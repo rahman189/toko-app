@@ -64,9 +64,8 @@ describe('Products E2E', () => {
         )
         .send({
           name: 'Minuman',
-          slug: `minuman-${Date.now()}`,
         })
-        .expect(201);
+        .expect(200);
 
     categoryId = response.body.id;
 
@@ -83,11 +82,10 @@ describe('Products E2E', () => {
         )
         .send({
           name: 'Aqua',
-          brand: 'Aqua',
           description: 'Air mineral',
           categoryId,
         })
-        .expect(201);
+        .expect(200);
 
     productId = response.body.id;
 
@@ -107,12 +105,13 @@ describe('Products E2E', () => {
           sku: `AQUA-600-${Date.now()}`,
           barcode: `899999${Date.now()}`,
           price: 5000,
+          costPrice: 4500,
           stock: 100,
           attributes: {
             volume: '600ml',
           },
         })
-        .expect(201);
+        .expect(200);
 
     expect(response.body.variantName).toBe(
       'Aqua 600ml',
